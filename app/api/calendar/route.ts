@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import UserCalendar from "@/app/models/UserCalendar";
+import Calendar from "@/app/models/Calendar";
 
 export async function GET(request: Request) {
   await dbConnect();
@@ -13,19 +13,13 @@ export async function GET(request: Request) {
   }
 
   try {
-    let calendar = await UserCalendar.findOne({ userId, year });
+    let calendar = await Calendar.findOne({ userId });
     
     if (!calendar) {
-      // Create new calendar if it doesn't exist
-      calendar = await UserCalendar.create({
+      calendar = await Calendar.create({
         userId,
-        year,
-        monthData: Object.fromEntries(
-          Array(12).fill(null).map((_, i) => [
-            new Date(year, i).toLocaleString('en-US', { month: 'long' }),
-            { selectedDays: [], target: 0, achieved: 0 }
-          ])
-        )
+        user: userId, // For backward compatibility
+        months: {}
       });
     }
 
@@ -40,7 +34,7 @@ export async function PUT(request: Request) {
   
   try {
     const body = await request.json();
-    const { userId, year = new Date().getFullYear(), month, selectedDays, target, achieved } = body;
+    const { userId, month, selectedDays, target, achieved, countOfDates } = body;
 
     if (!userId || !month) {
       return NextResponse.json({ 
@@ -49,20 +43,19 @@ export async function PUT(request: Request) {
       }, { status: 400 });
     }
 
-    const updateQuery = {
-      $set: {
-        [`monthData.${month}`]: {
-          selectedDays: selectedDays || [],
-          target: target || 0,
-          achieved: achieved || 0
-        },
-        lastUpdated: new Date()
-      }
+    const updateData = {
+      [`months.${month}`]: {
+        selectedDays: selectedDays || [],
+        target: target || 0,
+        achieved: achieved || 0,
+        countOfDates: countOfDates || 0
+      },
+      lastUpdated: new Date()
     };
 
-    const calendar = await UserCalendar.findOneAndUpdate(
-      { userId, year },
-      updateQuery,
+    const calendar = await Calendar.findOneAndUpdate(
+      { userId },
+      { $set: updateData },
       { 
         new: true,
         upsert: true,

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import Calendar from '@/app/models/Calender2';
+import Calendar from '@/app/models/Calendar';
 import dbConnect from '@/lib/dbConnect';
 
 export async function PUT(request: Request) {
@@ -9,7 +9,6 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const { user, month, countOfDates } = body;
 
-    // Validate the incoming request
     if (!user || !month || typeof countOfDates !== 'number') {
       return NextResponse.json(
         {
@@ -20,14 +19,17 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Find the document and update it
+    const updateData = {
+      [`months.${month}.countOfDates`]: countOfDates,
+      lastUpdated: new Date()
+    };
+
     const updatedCalendar = await Calendar.findOneAndUpdate(
-      { user, uMonth: month },
-      { $set: { countOfDates } },
+      { user },
+      { $set: updateData },
       { new: true }
     );
 
-    // Handle the case where no document is found
     if (!updatedCalendar) {
       return NextResponse.json(
         {
@@ -38,7 +40,6 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Successfully updated, return the updated document
     return NextResponse.json(
       {
         success: true,
@@ -47,7 +48,6 @@ export async function PUT(request: Request) {
       { status: 200 }
     );
   } catch (error: any) {
-    // Handle any errors
     return NextResponse.json(
       {
         success: false,
