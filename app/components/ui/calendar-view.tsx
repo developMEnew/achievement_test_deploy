@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
+import type { Month } from '@/app/utils/calendar';
 
 interface CalendarViewProps {
-  month: string;
+  month: Month;
   year: number;
   selectedDays: Set<string>;
   onDayToggle: (day: string) => void;

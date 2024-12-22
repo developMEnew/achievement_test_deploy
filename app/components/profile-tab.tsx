@@ -6,6 +6,7 @@ import { UpdateButton } from './calendar/UpdateButton';
 import { countSelectedDaysPerMonth } from '../utils/calendar';
 import { useCalendarData } from '../hooks/useCalendarData';
 import { useState } from 'react';
+import type { Month } from '../utils/calendar';
 
 export function ProfileTab() {
   const userId = "current-user-id";
@@ -62,7 +63,7 @@ export function ProfileTab() {
       />
       <MonthSelector 
         selectedMonth={selectedMonth} 
-        onChange={setMonth} 
+        onChange={(month: Month) => setMonth(month)} 
       />
       <CalendarView
         month={selectedMonth}

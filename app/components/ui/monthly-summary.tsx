@@ -1,7 +1,7 @@
 import { MonthlyCount } from '@/app/utils/calendar';
 
 interface MonthlySummaryProps {
-  monthlyCounts: Map<string, number>;
+  monthlyCounts: MonthlyCount;
 }
 
 export function MonthlySummary({ monthlyCounts }: MonthlySummaryProps) {

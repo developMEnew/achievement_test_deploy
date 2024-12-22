@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
 import { getPreselectedDaysForMonth, parseDayKey } from '../utils/calendarHelpers';
-import { months } from '../utils/calendar';
+import { months, Month } from '../utils/calendar';
 import { useCalendarData } from './useCalendarData';
+
+interface CalendarState {
+  selectedDays: Set<string>;
+  selectedMonth: Month;
+}
 
 export function useCalendarState(userId: string) {
   const { calendarData } = useCalendarData({ userId });
-  const [state, setState] = useState({
+  const [state, setState] = useState<CalendarState>({
     selectedDays: new Set<string>(),
     selectedMonth: months[0]
   });
@@ -19,7 +24,7 @@ export function useCalendarState(userId: string) {
     }));
   }, [state.selectedMonth, calendarData]);
 
-  const setMonth = (newMonth: string) => {
+  const setMonth = (newMonth: Month) => {
     setState(prevState => ({
       selectedDays: new Set<string>(),
       selectedMonth: newMonth

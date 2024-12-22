@@ -1,8 +1,8 @@
-import { months } from '@/app/utils/calendar';
+import { months, Month } from '@/app/utils/calendar';
 
 interface MonthSelectorProps {
-  selectedMonth: string;
-  onChange: (month: string) => void;
+  selectedMonth: Month;
+  onChange: (month: Month) => void;
 }
 
 export function MonthSelector({ selectedMonth, onChange }: MonthSelectorProps) {
@@ -10,7 +10,7 @@ export function MonthSelector({ selectedMonth, onChange }: MonthSelectorProps) {
     <div className="relative">
       <select
         value={selectedMonth}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value as Month)}
         className="w-full p-3 rounded-xl bg-white border border-gray-200 appearance-none pr-10"
       >
         {months.map((month) => (
